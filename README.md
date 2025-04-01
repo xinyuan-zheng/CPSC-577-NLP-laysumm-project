@@ -12,3 +12,5 @@ Overview of the BioLaySumm 2024 Shared Task on the Lay Summarization of Biomedic
 
 
 UIUC_BioNLP at BioLaySumm: An Extract-then-Summarize Approach Augmented with Wikipedia Knowledge for Biomedical Lay Summarization: https://aclanthology.org/2024.bionlp-1.11.pdf
+
+The evaluation model is from https://github.com/TGoldsack1/BioLaySumm2024-evaluation_scripts
