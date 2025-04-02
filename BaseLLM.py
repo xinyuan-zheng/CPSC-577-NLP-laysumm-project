@@ -21,10 +21,14 @@ if __name__ == '__main__':
     sampling_params = SamplingParams(temperature=0.15, max_tokens=2048)
     # sampling_params = SamplingParams(temperature=0.7, max_tokens=2048)
     llm = LLM(model="mistralai/Mistral-Small-3.1-24B-Instruct-2503",
-              gpu_memory_utilization=0.95)
+              gpu_memory_utilization=0.95,
+              max_model_len=8000)
     # llm = LLM(model="google/gemma-3-4b-it", gpu_memory_utilization=0.95)
     # llm = LLM(model="Qwen/Qwen2.5-7B-Instruct-1M",
     #           gpu_memory_utilization=0.95)
+
+    tokenizer = llm.get_tokenizer()
+    MAX_PROMPT_TOKENS = 7500
 
     plos = pd.read_json('../plos/test.json')
     print(plos.shape[0])
@@ -37,15 +41,19 @@ if __name__ == '__main__':
         for index, row in plos[batch_start:batch_end].iterrows():
             section_ls = row['sections']
             comment = ' '.join([sentence for sublist in section_ls for sentence in sublist])
+            comment_tokens = tokenizer.encode(comment, truncation=True, max_length=MAX_PROMPT_TOKENS)
+            comment_truncated = tokenizer.decode(comment_tokens, skip_special_tokens=True)
             base = f"""
 Below you will see a research paper between `[START]` and `[END]`.
  
-Please summarize this research in plain language for a general audience. The summary should have about 200 words.
+Please summarize this research in plain language for a general audience. The summary should have 100-200 words.
+
+Please use plain text without subsections and bullet points.
 
 Focus on the main question, why it matters, what was done, what was found, and what it means—without using technical jargon.
 
 **Text to Summarize:**  
-[START] {comment} [END]
+[START] {comment_truncated} [END]
 """
 
             prompts.append(base)
