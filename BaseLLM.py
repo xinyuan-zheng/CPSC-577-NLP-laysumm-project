@@ -13,15 +13,18 @@ print(f"Using GPU: {torch.cuda.current_device() if torch.cuda.is_available() els
 # module load cuda/11.8
 # srun --gres=gpu:1 --mem=72G --cpus-per-task=4 --pty bash
 # srun --mem=128G --cpus-per-task=8 --pty bash
-# srun --nodelist=c17 --gres=gpu:1 --mem=72G --cpus-per-task=1 --pty bash
+# srun --nodelist=c20 --gres=gpu:1 --mem=128G --cpus-per-task=1 --pty bash
 # nvidia-smi
 
 if __name__ == '__main__':
     torch.cuda.empty_cache()
     sampling_params = SamplingParams(temperature=0.15, max_tokens=2048)
-    # llm = LLM(model="mistralai/Mistral-Small-3.1-24B-Instruct-2503")
-    # llm = LLM(model="google/gemma-3-12b-it")
-    llm = LLM(model="Qwen/Qwen2.5-7B-Instruct-1M")
+    # sampling_params = SamplingParams(temperature=0.7, max_tokens=2048)
+    llm = LLM(model="mistralai/Mistral-Small-3.1-24B-Instruct-2503",
+              gpu_memory_utilization=0.95)
+    # llm = LLM(model="google/gemma-3-4b-it", gpu_memory_utilization=0.95)
+    # llm = LLM(model="Qwen/Qwen2.5-7B-Instruct-1M",
+    #           gpu_memory_utilization=0.95)
 
     plos = pd.read_json('../plos/test.json')
     print(plos.shape[0])
@@ -54,7 +57,7 @@ Focus on the main question, why it matters, what was done, what was found, and w
                 answer = output.outputs[0].text.strip()
                 print(answer)
                 result_dict = {
-                    "id": int(row['id']),
+                    "id": row['id'],
                     "summary": answer
                 }
                 results.append(result_dict)
