@@ -22,6 +22,7 @@ if __name__ == '__main__':
     # sampling_params = SamplingParams(temperature=0.7, max_tokens=2048)
     llm = LLM(model="mistralai/Mistral-Small-3.1-24B-Instruct-2503",
               gpu_memory_utilization=0.95,
+              # dtype='half',
               max_model_len=8000)
     # llm = LLM(model="google/gemma-3-4b-it", gpu_memory_utilization=0.95)
     # llm = LLM(model="Qwen/Qwen2.5-7B-Instruct-1M",
@@ -30,12 +31,12 @@ if __name__ == '__main__':
     tokenizer = llm.get_tokenizer()
     MAX_PROMPT_TOKENS = 7500
 
-    plos = pd.read_json('../plos/test.json')
+    plos = pd.read_json('../elife/test.json')
     print(plos.shape[0])
 
     batch_size = 1
     count = 0
-    for batch_start in range(0, 5, batch_size):
+    for batch_start in range(0, len(plos), batch_size):
         batch_end = min(batch_start + batch_size, len(plos))
         prompts = []
         for index, row in plos[batch_start:batch_end].iterrows():
@@ -70,7 +71,7 @@ Focus on the main question, why it matters, what was done, what was found, and w
                 }
                 results.append(result_dict)
 
-            with open(f"../test/plos/{batch_start}.json", "w") as file:
+            with open(f"../test/elife/{batch_start}.json", "w") as file:
                 json.dump(results, file, indent=4)
         except Exception as e:
             print(f"Error processing: {e}")
