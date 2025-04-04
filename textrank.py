@@ -5,7 +5,6 @@ from sentence_transformers import SentenceTransformer, util
 import nltk
 import numpy as np
 
-# Ensure the Punkt tokenizer is available
 # nltk.download('punkt')
 
 def flatten_sections(sections):
@@ -31,7 +30,7 @@ def text_rank(sentences, model, top_k=20, similarity_threshold=0.1):
     # Step 2: Compute the cosine similarity matrix.
     sim_matrix = util.pytorch_cos_sim(embeddings, embeddings).cpu().numpy()
     
-    # Step 3: Prune the similarity matrix by setting values below threshold to 0.
+    # Step 3: Prune the similarity matrix by setting values below the threshold to 0.
     pruned_sim_matrix = np.where(sim_matrix >= similarity_threshold, sim_matrix, 0)
     
     # Step 4: Build graph using the pruned similarity matrix.
@@ -40,22 +39,22 @@ def text_rank(sentences, model, top_k=20, similarity_threshold=0.1):
     # Step 5: Run PageRank.
     scores = nx.pagerank(graph, max_iter=10000, tol=1e-06)
     
-    # Step 6: Rank sentences by their PageRank scores.
-    # Include original index for later ordering.
+    # Step 6: Include original index for later ordering.
     ranked_sentences = sorted(((scores[i], i, s) for i, s in enumerate(sentences)), reverse=True)
     
-    # Step 7: Select top_k sentences based on score.
+    # Step 7: Select the top_k sentences based on PageRank score.
     top_k_ranked = ranked_sentences[:top_k]
     
-    # Step 8: Sort the selected sentences by their original index (i.e., their order in the article).
+    # Step 8: Sort the selected sentences by their original index.
     top_k_sorted = sorted(top_k_ranked, key=lambda x: x[1])
     
     # Return only the sentence strings.
     return [s for score, i, s in top_k_sorted]
 
 def main():
-    # Define the path for the test subset file.
+    # Define input and output paths.
     input_path = Path("test/plos_test_subset.json")
+    output_path = input_path.parent / "plos_test_subset_textrank.json"
     
     # Load the JSON file containing the subset of articles.
     with open(input_path, 'r', encoding='utf-8') as f:
@@ -64,26 +63,23 @@ def main():
     # Load the domain-specific sentence embedding model.
     model = SentenceTransformer("NeuML/pubmedbert-base-embeddings")
     
-    # Process each article.
+    # Process each article in the input file.
     for article in articles:
-        article_id = article.get("id", "N/A")
-        title = article.get("title", "No Title")
         sections = article.get("sections", [])
-        
-        # Flatten the sections into a list of sentences.
         sentences = flatten_sections(sections)
         if not sentences:
-            print(f"Article {article_id} has no sentences; skipping.")
+            article["top_k"] = []  # If no sentences, store an empty list.
             continue
         
-        # Apply the modified TextRank method with pruning and return top 20, then sort by original order.
+        # Compute top_k ranked sentences.
         top_sentences = text_rank(sentences, model, top_k=20, similarity_threshold=0.1)
-        print(f"\nArticle ID: {article_id}")
-        print(f"Title: {title}")
-        print("Top 20 TextRank Sentences (in original order):")
-        for idx, sent in enumerate(top_sentences, start=1):
-            print(f"{idx}. {sent}")
-        print("-" * 80)
+        article["top_k"] = top_sentences
+    
+    # Save the updated articles list to the output file.
+    with open(output_path, 'w', encoding='utf-8') as f_out:
+        json.dump(articles, f_out, indent=2, ensure_ascii=False)
+    
+    print(f"Saved updated articles with 'top_k' field to {output_path}")
 
 if __name__ == "__main__":
     main()
