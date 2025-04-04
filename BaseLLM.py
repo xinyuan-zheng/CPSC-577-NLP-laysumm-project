@@ -1,5 +1,5 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2"
 
 import re
 from vllm import LLM, SamplingParams
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     tokenizer = llm.get_tokenizer()
     MAX_PROMPT_TOKENS = 7500
 
-    plos = pd.read_json('../elife/test.json')
+    plos = pd.read_json('../elife/test_textrank.json')
     print(plos.shape[0])
 
     batch_size = 1
@@ -40,8 +40,10 @@ if __name__ == '__main__':
         batch_end = min(batch_start + batch_size, len(plos))
         prompts = []
         for index, row in plos[batch_start:batch_end].iterrows():
-            section_ls = row['sections']
-            comment = ' '.join([sentence for sublist in section_ls for sentence in sublist])
+            top_k = row['top_k']
+            comment = ' '.join([sentence for sentence in top_k])
+            # section_ls = row['sections']
+            # comment = ' '.join([sentence for sublist in section_ls for sentence in sublist])
             comment_tokens = tokenizer.encode(comment, truncation=True, max_length=MAX_PROMPT_TOKENS)
             comment_truncated = tokenizer.decode(comment_tokens, skip_special_tokens=True)
             base = f"""
@@ -71,7 +73,7 @@ Focus on the main question, why it matters, what was done, what was found, and w
                 }
                 results.append(result_dict)
 
-            with open(f"../test/elife/{batch_start}.json", "w") as file:
+            with open(f"../test/elife/top_k-{batch_start}.json", "w") as file:
                 json.dump(results, file, indent=4)
         except Exception as e:
             print(f"Error processing: {e}")
