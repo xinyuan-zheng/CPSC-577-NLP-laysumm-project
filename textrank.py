@@ -51,10 +51,11 @@ def text_rank(sentences, model, top_k=20, similarity_threshold=0.1):
     # Return only the sentence strings.
     return [s for score, i, s in top_k_sorted]
 
+
 def main():
     # Define input and output paths.
-    input_path = Path("test/plos_test_subset.json")
-    output_path = input_path.parent / "plos_test_subset_textrank.json"
+    input_path = Path("../plos/test.json")
+    output_path = "../plos/test_textrank.json"
     
     # Load the JSON file containing the subset of articles.
     with open(input_path, 'r', encoding='utf-8') as f:
@@ -62,24 +63,29 @@ def main():
     
     # Load the domain-specific sentence embedding model.
     model = SentenceTransformer("NeuML/pubmedbert-base-embeddings")
-    
+
+    count = 0
     # Process each article in the input file.
     for article in articles:
         sections = article.get("sections", [])
         sentences = flatten_sections(sections)
         if not sentences:
-            article["top_k"] = []  # If no sentences, store an empty list.
+            article["top_k"] = []
             continue
         
         # Compute top_k ranked sentences.
         top_sentences = text_rank(sentences, model, top_k=20, similarity_threshold=0.1)
         article["top_k"] = top_sentences
-    
+        count += 1
+        if count % 10 == 0:
+            print(f"Processing {count} articles")
+
     # Save the updated articles list to the output file.
     with open(output_path, 'w', encoding='utf-8') as f_out:
         json.dump(articles, f_out, indent=2, ensure_ascii=False)
     
     print(f"Saved updated articles with 'top_k' field to {output_path}")
+
 
 if __name__ == "__main__":
     main()
