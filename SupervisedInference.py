@@ -78,21 +78,25 @@ def predict_scores(paragraphs, model, tokenizer, batch_size=16):
 
 
 if __name__ == '__main__':
-    print("Loading paragraphs for inference...")
-    df = pd.read_json('../plos/test_simscore.json')
-    df = explode_paragraphs(df)
-    paragraphs = df['paragraph'].tolist()
-    print(f"Loaded {len(paragraphs)} paragraphs.")
+    # print("Loading paragraphs for inference...")
+    # df = pd.read_csv('../plos/test_simscore.csv')
+    # df = explode_paragraphs(df)
+    # paragraphs = df['paragraph'].tolist()
+    # print(f"Loaded {len(paragraphs)} paragraphs.")
+    #
+    # # Load model + tokenizer
+    # tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
+    # model = RobertaScoreRegressor().to(device)
+    # model.load_state_dict(torch.load("roberta_score_regressor.pt", map_location=device))
+    #
+    # print("Predicting scores...")
+    # predicted_scores = predict_scores(paragraphs, model, tokenizer)
 
-    # Load model + tokenizer
-    tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
-    model = RobertaScoreRegressor().to(device)
-    model.load_state_dict(torch.load("roberta_score_regressor.pt", map_location=device))
+    # # Save predictions
+    # df['predicted_score'] = predicted_scores
+    # df.to_csv('../plos/test_simscore_predictions.csv', index=False)
+    # print("Saved predictions to test_predictions.csv")
 
-    print("Predicting scores...")
-    predicted_scores = predict_scores(paragraphs, model, tokenizer)
-
-    # Save predictions
-    df['predicted_score'] = predicted_scores
+    df = pd.read_csv('../plos/test_simscore_predictions.csv')
+    df = df[['id', 'year', 'title',  'paragraph', 'predicted_score']]
     df.to_csv('../plos/test_simscore_predictions.csv', index=False)
-    print("Saved predictions to test_predictions.csv")
