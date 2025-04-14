@@ -81,7 +81,7 @@ def compute_para_similarities(df, summary_col='summary', section_col='sections')
 
 
 if __name__ == '__main__':
-    core = pd.read_json('../plos/train.json')
+    core = pd.read_json('../elife/test.json')
     print(f"Loaded {core.shape[0]} examples.")
     out_df = compute_para_similarities(core, summary_col='summary', section_col='sections')
-    out_df.to_csv('../plos/train_simscore.csv', index=False)
+    out_df.to_csv('../elife/test_simscore.csv', index=False)

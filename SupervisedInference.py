@@ -52,6 +52,15 @@ class InferenceParaDataset(Dataset):
         }
 
 
+def explode_paragraphs(df):
+    if df['paragraphs'].apply(type).eq(str).any():
+        df['paragraphs'] = df['paragraphs'].apply(ast.literal_eval)
+
+    df = df.explode('paragraphs', ignore_index=True)
+    df = df.rename(columns={'paragraphs': 'paragraph'})
+    return df
+
+
 def predict_scores(paragraphs, model, tokenizer, batch_size=16):
     model.eval()
     dataset = InferenceParaDataset(paragraphs, tokenizer)
@@ -70,10 +79,8 @@ def predict_scores(paragraphs, model, tokenizer, batch_size=16):
 
 if __name__ == '__main__':
     print("Loading paragraphs for inference...")
-    df = pd.read_json('../plos/test.json')
-    df['paragraphs'] = df['paragraphs'].apply(ast.literal_eval)
-    df = df.explode('paragraphs').rename(columns={'paragraphs': 'paragraph'}).dropna(subset=['paragraph'])
-
+    df = pd.read_json('../plos/test_simscore.json')
+    df = explode_paragraphs(df)
     paragraphs = df['paragraph'].tolist()
     print(f"Loaded {len(paragraphs)} paragraphs.")
 
@@ -87,5 +94,5 @@ if __name__ == '__main__':
 
     # Save predictions
     df['predicted_score'] = predicted_scores
-    df.to_csv('../plos/test_predictions.csv', index=False)
+    df.to_csv('../plos/test_simscore_predictions.csv', index=False)
     print("Saved predictions to test_predictions.csv")

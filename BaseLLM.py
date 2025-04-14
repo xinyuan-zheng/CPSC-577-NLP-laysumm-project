@@ -31,7 +31,7 @@ if __name__ == '__main__':
     tokenizer = llm.get_tokenizer()
     MAX_PROMPT_TOKENS = 7500
 
-    plos = pd.read_json('../elife/test_textrank.json')
+    plos = pd.read_json('../elife/test_textrank50.json')
     print(plos.shape[0])
 
     batch_size = 1
@@ -73,7 +73,7 @@ Focus on the main question, why it matters, what was done, what was found, and w
                 }
                 results.append(result_dict)
 
-            with open(f"../test/elife/top_k-{batch_start}.json", "w") as file:
+            with open(f"../test/elife/top_50-{batch_start}.json", "w") as file:
                 json.dump(results, file, indent=4)
         except Exception as e:
             print(f"Error processing: {e}")
