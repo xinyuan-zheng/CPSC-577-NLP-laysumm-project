@@ -58,22 +58,22 @@ def eval(pred, gt):
     score_dict['FKGL'] = fkgl_score
     score_dict['DCRS'] = dcrs_score
     score_dict['CLI'] = cli_score
-    # score_dict['BERTScore'] = calc_bertscore(pred, gt)
+    score_dict['BERTScore'] = calc_bertscore(pred, gt)
     # score_dict['AlignScore'] = calc_alignscore(pred, gt)
     # score_dict['SummaC'] = cal_summac(pred, gt)
     return score_dict
 
 
 if __name__ == '__main__':
-    plos_test = pd.read_json('./test/plos_test.json')
-    plos_base = pd.read_csv('./result/plosBaseLLM.csv')
-    plos_topk = pd.read_csv('./result/plosTopKLLM.csv')
+    plos_test = pd.read_json('../test/plos_test.json')
+    plos_base = pd.read_csv('../result/plosBaseLLM.csv')
+    plos_topk = pd.read_csv('../result/plosTopKLLM.csv')
 
-    elife_test = pd.read_json('./test/elife_test.json')
-    elife_base = pd.read_csv('./result/elifeBaseLLM.csv')
-    elife_topk = pd.read_csv('./result/elifeTopKLLM.csv')
+    elife_test = pd.read_json('../test/elife_test.json')
+    elife_base = pd.read_csv('../result/elifeBaseLLM.csv')
+    elife_topk = pd.read_csv('../result/elifeTopKLLM.csv')
 
-    out_dir = "./eval"
+    out_dir = "./"
 
     # plos
     eval_table_base = pd.DataFrame()
@@ -83,6 +83,7 @@ if __name__ == '__main__':
         gt = [' '.join(plos_test.iloc[idx]['summary'])]
         pred_base = [plos_base[plos_base['id'] == tid]['summary'].values[0]]
         pred_topk = [plos_topk[plos_topk['id'] == tid]['summary'].values[0]]
+
         score_dict_base = eval(pred_base, gt)
         score_dict_topk = eval(pred_topk, gt)
         score_dict_base['id'] = tid
