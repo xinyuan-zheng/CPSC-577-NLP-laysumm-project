@@ -47,7 +47,8 @@ def calc_alignscore(preds, docs):
   return np.mean(alignscorer.score(contexts=docs, claims=preds))
 
 def cal_summac(preds, docs):
-  model_conv = SummaCConv(models=["vitc"], bins='percentile', granularity="sentence", nli_labels="e", device="cuda", start_file="default", agg="mean")
+  model_conv = SummaCConv(models=["vitc"], bins='percentile', granularity="sentence", \
+                          nli_labels="e", device="cuda", start_file="default", agg="mean")
   return np.mean(model_conv.score(docs, preds)['scores'])
 
 def eval(pred, gt):
@@ -65,7 +66,7 @@ def eval(pred, gt):
     score_dict['SummaC'] = cal_summac(pred, gt)
     return score_dict
 
-def add_summary_row(df):
+def add_summary(df):
     numeric_cols = df.select_dtypes(include=[np.number]).columns
     mean_row = df[numeric_cols].mean()
     std_row = df[numeric_cols].std()
@@ -91,7 +92,7 @@ if __name__ == '__main__':
     elife_top50 = pd.read_csv('../result/elifeTextRankTop50LLM.csv')
     elife_super = pd.read_csv('../result/elifeSupervisedTop50LLM.csv')
 
-    out_dir = "./"
+    out_dir = "./results"
     
     # evaluation 
     for dataset in ['plos', 'elife']:
@@ -136,10 +137,10 @@ if __name__ == '__main__':
             eval_table_top50 = pd.concat([eval_table_top50, pd.DataFrame([score_dict_top50])], ignore_index=True)
             eval_table_super = pd.concat([eval_table_super, pd.DataFrame([score_dict_super])], ignore_index=True)
 
-        eval_table_base = add_summary_row(eval_table_base[[eval_table_base.columns[-1]] + list(eval_table_base.columns[:-1])])
-        eval_table_top20 = add_summary_row(eval_table_top20[[eval_table_top20.columns[-1]] + list(eval_table_top20.columns[:-1])])
-        eval_table_top50 = add_summary_row(eval_table_top50[[eval_table_top50.columns[-1]] + list(eval_table_top50.columns[:-1])])
-        eval_table_super = add_summary_row(eval_table_super[[eval_table_super.columns[-1]] + list(eval_table_super.columns[:-1])])
+        eval_table_base = add_summary(eval_table_base[[eval_table_base.columns[-1]]+list(eval_table_base.columns[:-1])])
+        eval_table_top20 = add_summary(eval_table_top20[[eval_table_top20.columns[-1]]+list(eval_table_top20.columns[:-1])])
+        eval_table_top50 = add_summary(eval_table_top50[[eval_table_top50.columns[-1]]+list(eval_table_top50.columns[:-1])])
+        eval_table_super = add_summary(eval_table_super[[eval_table_super.columns[-1]]+list(eval_table_super.columns[:-1])])
 
         eval_table_base.to_excel(os.path.join(out_dir, dataset+'BaseLlmEval.xlsx'), index=False)
         eval_table_top20.to_excel(os.path.join(out_dir, dataset+'Top20LlmEval.xlsx'), index=False)
