@@ -5,7 +5,6 @@ from sentence_transformers import SentenceTransformer, util
 import nltk
 import numpy as np
 
-
 # nltk.download('punkt')
 
 def flatten_sections(sections):
@@ -22,7 +21,6 @@ def text_rank(sentences, model, top_k=20, similarity_threshold=0.1):
         model (SentenceTransformer): Preloaded sentence embedding model.
         top_k (int): Number of top sentences to select.
         similarity_threshold (float): Prune similarity values below this threshold.
-
     Returns:
         List[str]: Top ranked sentences, sorted in their original order.
     """
@@ -74,7 +72,6 @@ def main():
         if not sentences:
             article["top_k"] = []
             continue
-
         # Compute top_k ranked sentences.
         top_sentences = text_rank(sentences, model, top_k=20, similarity_threshold=0.1)
         article["top_k"] = top_sentences
@@ -85,7 +82,6 @@ def main():
     # Save the updated articles list to the output file.
     with open(output_path, 'w', encoding='utf-8') as f_out:
         json.dump(articles, f_out, indent=2, ensure_ascii=False)
-
     print(f"Saved updated articles with 'top_k' field to {output_path}")
 
 
