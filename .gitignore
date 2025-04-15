@@ -1,0 +1,4 @@
+# .gitignore
+AlignScore/
+eval/models/AlignScore/
+eval/models/LENS/
