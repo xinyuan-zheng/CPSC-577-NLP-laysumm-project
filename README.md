@@ -1,16 +1,24 @@
 # Class project for CPSC 477/577 NLP
 Xinyuan Zheng, Iris Wang, Zichen Gong  
-## Lay summarization for biomedical literature  
+## Hybrid Extractive-Abstractive Summarization for Biomedical Articles via LLM Generation for Lay Audience 
 
-The rise of large language models (LLMs) has opened up new ways to process and understand long-form text, making vast amounts of knowledge more accessible. Scientific literature, financial reports, and legal documents often contain critical insights, but their complexity poses a barrier to lay audiences. Bridging this gap requires effective summarization techniques that not only condense information but also translate domain-specific language into lay-friendly interpretations. In this project, we propose to answer: How can LLMs be fine-tuned to generate high-quality lay summaries of domain-specific texts while preserving accuracy and relevance?
+Large language models (LLMs) offer new possibilities for generating lay summaries of complex scientific literature. This project explores how to augment LLMs to produce accurate, accessible explanations of domain-specific texts. We frame lay summarization as a two-step process: selecting key content and rewriting it in lay-friendly language. Using the BioLaySumm dataset, we compare hard truncation, TextRank, and supervised RoBERTa-based selection. The sentence selection did not improve performance over simple truncation, suggesting that lay summarization may require broader context and that LLMs are robust to noisy inputs in this setting.
 
-Existing summarization work primarily focuses on producing concise, abstractive summaries within the same domain. For example, in finance, earnings call transcripts are distilled into financial news bullet points. In the scientific domain, abstractive and extractive methods are used to generate structured abstracts from research papers. These approaches are effective in condensing information but are designed with domain experts in mind, assuming familiarity with specialized terminology and concepts. To address this gap, we propose to develop an LLM-based framework for lay summarization by leveraging technical-lay twin data and fine-tuning models to generate audience-aware summaries that adjust complexity while preserving accuracy and relevance.
+### Environment & dependency
+- Python 3.10
+- pandas: 2.2.1
+- numpy: 1.26.4
+- pytorch (torch): 2.6.0+cu124
+- networkx: 3.3
+- sentence_transformers: 4.0.2
+- nltk: 3.8.1
+- sklearn: 1.2.2
+- vllm: 0.8.3.dev188+gdb9dfcfa
 
-
-
+### Data & Evaluation
 Overview of the BioLaySumm 2024 Shared Task on the Lay Summarization of Biomedical Research Articles: https://arxiv.org/pdf/2408.08566
-
-
-UIUC_BioNLP at BioLaySumm: An Extract-then-Summarize Approach Augmented with Wikipedia Knowledge for Biomedical Lay Summarization: https://aclanthology.org/2024.bionlp-1.11.pdf
-
 The evaluation model is from https://github.com/TGoldsack1/BioLaySumm2024-evaluation_scripts
+
+### Computational Infra
+- We ran the TextRank and RoBERTa models using 1 Nvidia A100 GPU
+- We ran the inference of Mistral using 2 Nvidia A100 GPUs (without customized configurations)
