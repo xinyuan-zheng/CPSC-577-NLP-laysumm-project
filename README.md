@@ -16,7 +16,8 @@ Large language models (LLMs) offer new possibilities for generating lay summarie
 - vllm: 0.8.3.dev188+gdb9dfcfa
 
 ### Data & Evaluation
-Overview of the BioLaySumm 2024 Shared Task on the Lay Summarization of Biomedical Research Articles: https://arxiv.org/pdf/2408.08566
+Overview of the BioLaySumm 2024 Shared Task: https://arxiv.org/pdf/2408.08566
+
 The evaluation model is from https://github.com/TGoldsack1/BioLaySumm2024-evaluation_scripts
 
 ### Computational Infra
